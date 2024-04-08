@@ -5,25 +5,25 @@ import castillo.*
 test "rolando encuentra la espada del destino (la agarra)
 rolando encuentra el libro de hechizos (la agarra)
 rolando encuentra el collar divino (no lo agarra, ya que tiene la espada y el libro encima y su capacidad es de 2)" {
-	rolando.agarrar(espadaDelDestino)
-	rolando.agarrar(libroDeHechizos)
+	rolando.encontrar(espadaDelDestino)
+	rolando.encontrar(libroDeHechizos)
 	assert.equals(2, rolando.artefactos().size())
-	rolando.agarrar(collarDivino)
+	rolando.encontrar(collarDivino)
 	assert.equals(2, rolando.artefactos().size())
 }
 
 test "rolando encuentra la espada del destino (la agarra)
 rolando encuentra el libro de hechizos (la agarra)
 rolando llega al castillo de piedra (deja en el castillo la espada y el libro de hechizos)
-rolando encuentra el collar divino (ahora si lo puede agarrar, ya que liberó espacio)
+rolando encuentra el collar divino (ahora si lo puede encontrar, ya que liberó espacio)
 rolando llega al castillo de piedra de nuevo(deja el collar, con lo cual ahora el castillo tiene el collar, la espada y el libro)" {
-	rolando.agarrar(espadaDelDestino)
-	rolando.agarrar(libroDeHechizos)
+	rolando.encontrar(espadaDelDestino)
+	rolando.encontrar(libroDeHechizos)
 	assert.equals(2, rolando.artefactos().size())
 	rolando.irAlHogar()
 	assert.equals(2, castilloDePiedra.baul().size())
 	assert.equals(0, rolando.artefactos().size())
-	rolando.agarrar(collarDivino)
+	rolando.encontrar(collarDivino)
 	assert.equals(1, rolando.artefactos().size())
 	rolando.irAlHogar()
 	assert.equals(3, castilloDePiedra.baul().size())
@@ -36,10 +36,10 @@ rolando llega al castillo de piedra de nuevo(deja el collar, con lo cual ahora e
 test "Rolando tiene espada del destino y collar divino.
 Lo deja en el castillo y después agarra la armadura de Acero Valyrio.
 Rolando posee armadura, espada y collar, pero no el libro de hechizos." {
-	rolando.agarrar(espadaDelDestino)
-	rolando.agarrar(collarDivino)
+	rolando.encontrar(espadaDelDestino)
+	rolando.encontrar(collarDivino)
 	rolando.irAlHogar()
-	rolando.agarrar(armaduraDeAceroValyrio)
+	rolando.encontrar(armaduraDeAceroValyrio)
 	// Consultas
 	assert.that(rolando.posee(espadaDelDestino))
 	assert.that(rolando.posee(collarDivino))
@@ -52,17 +52,44 @@ rolando encuentra el libro de hechizos (la agarra)
 rolando encuentra el collar divino (no lo agarra, ya que tiene la espada y el libro encima y su capacidad es de 2)
 rolando llega al castillo de piedra (deja en el castillo la espada y el libro de hechizos)
 rolando encuentra la armadura de acero valyrio (la agarra)
-rolando encuentra el collar divino (ahora si lo puede agarrar, ya que liberó espacio)" {
-	rolando.agarrar(espadaDelDestino)
-	rolando.agarrar(libroDeHechizos)
-	rolando.agarrar(collarDivino)
+rolando encuentra el collar divino (ahora si lo puede encontrar, ya que liberó espacio)" {
+	rolando.encontrar(espadaDelDestino)
+	rolando.encontrar(libroDeHechizos)
+	rolando.encontrar(collarDivino)
 	rolando.irAlHogar()
-	rolando.agarrar(armaduraDeAceroValyrio)
-	rolando.agarrar(collarDivino)
+	rolando.encontrar(armaduraDeAceroValyrio)
+	rolando.encontrar(collarDivino)
 	// Consultas
 	assert.equals(espadaDelDestino, rolando.historialDeArtefactos().get(0))
 	assert.equals(libroDeHechizos, rolando.historialDeArtefactos().get(1))
 	assert.equals(collarDivino, rolando.historialDeArtefactos().get(2))
 	assert.equals(armaduraDeAceroValyrio, rolando.historialDeArtefactos().get(3))
 	assert.equals(collarDivino, rolando.historialDeArtefactos().get(4))
+}
+
+test "Hacer que Rolando tenga 5 de base y capacidad de 3 artefactos. Entre sus artefactos se encuentran la *espada* (que le aporta 5), la *armadura* (aporta 6) y el *collar* (aporta 3).
+- Luego de la primer batalla Rolando tiene 6 de base, la espada (aporta 6/2 = 3), la armadura (aporta 6) y el collar (aporta 3),   
+- Luego de la segunda batalla Rolando tiene 7 de base, la espada (aporta 7/2 = 3.5), la armadura 6 y el collar (3+2=5),   
+- Luego de la tercera batalla Rolando tiene 8 de base, la espada (aporta 8/2=4), la armadura 6 y el collar (3+3=6),   " {
+	rolando.capacidad(3)
+	rolando.poderBase(5)
+	rolando.artefactos(#{ espadaDelDestino, armaduraDeAceroValyrio, collarDivino })
+	rolando.batalla()
+	assert.equals(6, rolando.poderBase())
+	assert.equals(3, espadaDelDestino.poder(rolando))
+	assert.equals(6, armaduraDeAceroValyrio.poder(rolando))
+	assert.equals(3, collarDivino.poder(rolando))
+	assert.equals(18, rolando.poderPelea())
+	rolando.batalla()
+	assert.equals(7, rolando.poderBase())
+	assert.equals(3.5, espadaDelDestino.poder(rolando))
+	assert.equals(6, armaduraDeAceroValyrio.poder(rolando))
+	assert.equals(5, collarDivino.poder(rolando))
+	assert.equals(21.5, rolando.poderPelea())
+	rolando.batalla()
+	assert.equals(8, rolando.poderBase())
+	assert.equals(4, espadaDelDestino.poder(rolando))
+	assert.equals(6, armaduraDeAceroValyrio.poder(rolando))
+	assert.equals(6, collarDivino.poder(rolando))
+	assert.equals(24, rolando.poderPelea())
 }
