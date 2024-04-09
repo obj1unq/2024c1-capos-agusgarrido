@@ -46,12 +46,40 @@ object rolando {
 	}
 
 	method poderDeArtefactos() {
-		return artefactos.sum({ artefacto => artefacto.poder(self) }) // sum() -> Recibe un bloque y realiza una sumatoria
+		return artefactos.sum({ artefacto => artefacto.poder(self) })
 	}
 
 	method batalla() {
 		artefactos.forEach({ artefacto => artefacto.usar()})
 		poderBase += 1
+	}
+
+	method poderInvocacion() {
+		return hogar.poderInvocacion(self)
+	}
+
+	method vencible(enemigo) {
+		return enemigo.poderPelea() < self.poderPelea()
+	}
+
+	method tieneArmaFatal(enemigo) {
+		return artefactos.any({ artefacto => self.esFatal(artefacto, enemigo) })
+	}
+
+	method esFatal(artefacto, enemigo) {
+		return artefacto.poder(self) > enemigo.poderPelea()
+	}
+
+	method cantidadArmasFatales(enemigo) {
+		return artefactos.count({ artefacto => self.esFatal(artefacto, enemigo) })
+	}
+
+	method armaFatal(enemigo) {
+		return artefactos.find({ artefacto => self.esFatal(artefacto, enemigo) })
+	}
+
+	method armasFatales(enemigo) {
+		return artefactos.filter({ artefacto => self.esFatal(artefacto, enemigo) })
 	}
 
 }
